@@ -198,7 +198,6 @@ int main() {
 	// We'll be implementing a loader that works a bit like an OBJ loader to learn how to read files, we'll
 	// load an exact copy of the mesh created above
 	VertexArrayObject::sptr vao4 = NotObjLoader::LoadFromFile("Cube.notobj");
-	VertexArrayObject::sptr vao5 = NotObjLoader::LoadFromFile("Sphere.notobj");
 
 	// Load our shaders
 	Shader::sptr shader = Shader::Create();
@@ -302,9 +301,9 @@ int main() {
 		tKeyWatcher.Poll(window);
 		spaceKeyWatcher.Poll(window);
 				
-		transform = glm::rotate(glm::mat4(1.0f), static_cast<float>(thisFrame), glm::vec3(0, -2, 0));
-		transform2 = glm::rotate(glm::mat4(1.0f), static_cast<float>(thisFrame), glm::vec3(0, 2, 0));
-		transform3 = transform2 * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, glm::sin(static_cast<float>(thisFrame))));
+		//transform = glm::rotate(glm::mat4(1.0f), static_cast<float>(thisFrame), glm::vec3(0, -2, 0));
+		//transform2 = glm::rotate(glm::mat4(1.0f), static_cast<float>(thisFrame), glm::vec3(0, 2, 0));
+		//transform3 = transform2 * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, glm::sin(static_cast<float>(thisFrame))));
 		//transform2 = transform * glm::rotate(glm::mat4(1.0f), 20, glm::vec3(0, 0.0f, glm::sin(static_cast<float>(thisFrame))));
 		
 		glClearColor(0.08f, 0.17f, 0.31f, 1.0f);
@@ -320,11 +319,6 @@ int main() {
 		shader->SetUniformMatrix("u_Model", transform);
 		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform));
 		vao4->Render();
-
-		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform);
-		shader->SetUniformMatrix("u_Model", transform);
-		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform));
-		vao5->Render();
 
 		glfwSwapBuffers(window);
 		lastFrame = thisFrame;

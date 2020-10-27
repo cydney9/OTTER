@@ -8,6 +8,8 @@
 // Borrowed from https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 #pragma region String Trimming
 
+// Object Loader used for OBJ assignment
+
 // trim from start (in place)
 static inline void ltrim(std::string& s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
