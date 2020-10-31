@@ -47,8 +47,13 @@ int main() {
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	VertexArrayObject::sptr vao = ObjLoader::LoadFile("Player.obj");
-	//VertexArrayObject::sptr vao2 = ObjLoader::LoadFile("ball.obj");
+	VertexArrayObject::sptr vao = VertexArrayObject::Create();
+	vao = ObjLoader::LoadFile("Player.obj");
+
+	VertexArrayObject::sptr vao2 = VertexArrayObject::Create();
+	vao2 = ObjLoader::LoadFile("Player.obj");
+ 
+	//VertexArrayObject::sptr vaoBall = ObjLoader::LoadFile("ball.obj");
 
 
 	// Load our shaders
@@ -81,6 +86,8 @@ int main() {
 	glm::mat4 transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, glm::vec3(0.0f, 2.5f, 0.0f));
 	transform = glm::scale(transform, glm::vec3(0.8f, 0.2f, 0.5f));
+
+	glm::mat4 transform2 = glm::mat4(1.0f);
 
 	Camera::sptr camera = Camera::Create();
 	camera->SetPosition(glm::vec3(0, 3, 3)); // Set initial position
@@ -116,12 +123,17 @@ int main() {
 		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform);
 		shader->SetUniformMatrix("u_Model", transform);
 		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform));
-
 		vao->Render();
+
+		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform2);
+		shader->SetUniformMatrix("u_Model", transform2);
+		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform2));
+		vao2->Render();
 		
 		// Present our image to windows
 		glfwSwapBuffers(window);
 		lastFrame = thisFrame;
+
 	}
 
 	return 0;
