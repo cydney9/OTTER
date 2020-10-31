@@ -1,3 +1,0 @@
-# Add a cube to this object
-#      x   y   z    sx  sy  sz   rx  ry   rz    r   g   b
-cube 0.0 0.0 0.0   15.0 15.0 1.0  0.0 0.0 45.0  0.2 0.2 0.2  
