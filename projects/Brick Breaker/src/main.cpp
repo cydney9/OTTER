@@ -47,7 +47,9 @@ int main() {
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	VertexArrayObject::sptr vao = ObjLoader::LoadFile("Cube.obj");
+	VertexArrayObject::sptr vao = ObjLoader::LoadFile("Player.obj");
+	//VertexArrayObject::sptr vao2 = ObjLoader::LoadFile("ball.obj");
+
 
 	// Load our shaders
 	Shader::sptr shader = Shader::Create();
@@ -114,8 +116,9 @@ int main() {
 		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform);
 		shader->SetUniformMatrix("u_Model", transform);
 		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform));
-		vao->Render();
 
+		vao->Render();
+		
 		// Present our image to windows
 		glfwSwapBuffers(window);
 		lastFrame = thisFrame;
