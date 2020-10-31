@@ -7,6 +7,8 @@
 #include "Shader.h"
 #include "Camera.h"
 
+//Credit: Used starter from gdw project to build up from
+
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
 	RECT desktop;
