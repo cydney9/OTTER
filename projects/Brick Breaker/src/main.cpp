@@ -51,7 +51,7 @@ int main() {
 	vao = ObjLoader::LoadFile("Player.obj");
 
 	VertexArrayObject::sptr vao2 = VertexArrayObject::Create();
-	vao2 = ObjLoader::LoadFile("Ball.obj");
+	vao2 = ObjLoader::LoadFile("ball.obj");
  
 	//VertexArrayObject::sptr vaoBall = ObjLoader::LoadFile("ball.obj");
 
@@ -107,11 +107,11 @@ int main() {
 		float dt = static_cast<float>(thisFrame - lastFrame);
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			//transform = glm::rotate(transform, 0.001f, glm::vec3(0, 0, 1));
+			//transform2 = glm::rotate(transform2, 0.001f, glm::vec3(0, 0, 1));
 			transform = glm::translate(transform, glm::vec3(0.001, 0, 0));
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			//transform = glm::rotate(transform, -0.001f, glm::vec3(0, 0, 1));
+			//transform2 = glm::rotate(transform2, -0.001f, glm::vec3(0, 0, 1));
 			transform = glm::translate(transform, glm::vec3(-0.001, 0, 0));
 		}
 
@@ -122,11 +122,13 @@ int main() {
 		shader->Bind();
 		shader->SetUniform("u_CamPos", camera->GetPosition());
 
+		//Paddle
 		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform);
 		shader->SetUniformMatrix("u_Model", transform);
 		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform));
 		vao->Render();
 
+		//Ball
 		transform2 = glm::translate(transform2, glm::vec3(0.0f, 0.005f, 0.f));
 		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform2);
 		shader->SetUniformMatrix("u_Model", transform2);
