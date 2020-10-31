@@ -3,12 +3,12 @@
 #include "MeshBuilder.h"
 #include "MeshFactory.h"
 
-class NotObjLoader
+class ObjLoader
 {
 public:
 	static VertexArrayObject::sptr LoadFromFile(const std::string& filename);
 
 protected:
-	NotObjLoader() = default;
-	~NotObjLoader() = default;
+	ObjLoader() = default;
+	~ObjLoader() = default;
 };
