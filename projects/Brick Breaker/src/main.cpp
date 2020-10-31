@@ -77,7 +77,8 @@ int main() {
 	glFrontFace(GL_CW);
 
 	glm::mat4 transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));
+	transform = glm::translate(transform, glm::vec3(0.0f, 2.5f, 0.0f));
+	transform = glm::scale(transform, glm::vec3(0.8f, 0.2f, 0.5f));
 
 	Camera::sptr camera = Camera::Create();
 	camera->SetPosition(glm::vec3(0, 3, 3)); // Set initial position
@@ -95,10 +96,12 @@ int main() {
 		float dt = static_cast<float>(thisFrame - lastFrame);
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			transform = glm::rotate(transform, 0.01f, glm::vec3(0, 0, 1));
+			//transform = glm::rotate(transform, 0.001f, glm::vec3(0, 0, 1));
+			transform = glm::translate(transform, glm::vec3(0.001, 0, 0));
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			transform = glm::rotate(transform, -0.01f, glm::vec3(0, 0, 1));
+			//transform = glm::rotate(transform, -0.001f, glm::vec3(0, 0, 1));
+			transform = glm::translate(transform, glm::vec3(-0.001, 0, 0));
 		}
 
 		// Clear our screen every frame
