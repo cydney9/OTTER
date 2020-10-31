@@ -51,7 +51,7 @@ int main() {
 	vao = ObjLoader::LoadFile("Player.obj");
 
 	VertexArrayObject::sptr vao2 = VertexArrayObject::Create();
-	vao2 = ObjLoader::LoadFile("Player.obj");
+	vao2 = ObjLoader::LoadFile("Ball.obj");
  
 	//VertexArrayObject::sptr vaoBall = ObjLoader::LoadFile("ball.obj");
 
@@ -88,6 +88,8 @@ int main() {
 	transform = glm::scale(transform, glm::vec3(0.8f, 0.2f, 0.5f));
 
 	glm::mat4 transform2 = glm::mat4(1.0f);
+	transform2 = glm::scale(transform2, glm::vec3(0.125f, 0.125f, 0.125f));
+	float ballPosX = 0.25f;
 
 	Camera::sptr camera = Camera::Create();
 	camera->SetPosition(glm::vec3(0, 3, 3)); // Set initial position
@@ -125,6 +127,7 @@ int main() {
 		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform));
 		vao->Render();
 
+		transform2 = glm::translate(transform2, glm::vec3(0.0f, 0.005f, 0.f));
 		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform2);
 		shader->SetUniformMatrix("u_Model", transform2);
 		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform2));
