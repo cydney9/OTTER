@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 
+//Burrowed from GDW Project
+
 // Borrowed from https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 #pragma region String Trimming
 
