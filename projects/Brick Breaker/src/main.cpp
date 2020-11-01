@@ -24,6 +24,19 @@ void GetDesktopResolution(int& horizontal, int& vertical)
 	vertical = desktop.bottom;
 }
 
+void RenderVAO
+(
+	const Shader::sptr& shader,
+	const VertexArrayObject::sptr& vao,
+	const Camera::sptr& camera,
+	const Transform::sptr& transform
+)
+{
+	shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform->LocalTransform());
+	shader->SetUniformMatrix("u_Model", transform->LocalTransform());
+	vao->Render();
+}
+
 int main() {
 	// Initialize GLFW
 	if (glfwInit() == GLFW_FALSE) {
@@ -49,14 +62,14 @@ int main() {
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	//VAOS
-	VertexArrayObject::sptr vao = VertexArrayObject::Create();
-	vao = ObjLoader::LoadFile("Player.obj");
+	VertexArrayObject::sptr vao0 = ObjLoader::LoadFile("Player.obj");
+	VertexArrayObject::sptr vao1 = ObjLoader::LoadFile("ball.obj");
+	VertexArrayObject::sptr vao2 = ObjLoader::LoadFile("wall.obj");
 
-	VertexArrayObject::sptr vao2 = VertexArrayObject::Create();
-	vao2 = ObjLoader::LoadFile("ball.obj");
-
-	VertexArrayObject::sptr vaoWall = VertexArrayObject::Create();
-	vaoWall = ObjLoader::LoadFile("wall.obj");
+	VertexArrayObject::sptr vao[3];
+	vao[0] = vao0;
+	vao[1] = vao1;
+	vao[2] = vao2;
 
 	//Textures
 
@@ -88,16 +101,18 @@ int main() {
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);
 
-	glm::mat4 transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, glm::vec3(0.0f, 2.5f, 0.0f));
-	transform = glm::scale(transform, glm::vec3(0.8f, 0.2f, 0.5f));
+	Transform::sptr transform[3];
+	transform[0] = Transform::Create();
+	transform[1] = Transform::Create();
+	transform[2] = Transform::Create();
 
-	glm::mat4 transform2 = glm::mat4(1.0f);
-	transform2 = glm::scale(transform2, glm::vec3(0.125f, 0.125f, 0.125f));
+	transform[0]->SetLocalPosition(0.0f, 2.5f, 0.0f);
+	transform[0]->SetLocalScale(0.8f, 0.2f, 0.5f);
+
+	transform[1]->SetLocalScale(0.125f, 0.125f, 0.125f);
 	float ballPosX = 0.25f;
-
-	glm::mat4 transformWall = glm::mat4(1.0f);
-	transformWall = glm::scale(transformWall, glm::vec3(100.f, 100.f, 0.01f));
+	
+	transform[2]->SetLocalScale(100.f, 100.f, 0.01f);
 
 	Camera::sptr camera = Camera::Create();
 	camera->SetPosition(glm::vec3(0, 3, 3)); // Set initial position
@@ -116,11 +131,11 @@ int main() {
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 			//transform2 = glm::rotate(transform2, 0.001f, glm::vec3(0, 0, 1));
-			transform = glm::translate(transform, glm::vec3(0.001, 0, 0));
+			transform[0]->MoveLocal(0.001, 0, 0);
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			//transform2 = glm::rotate(transform2, -0.001f, glm::vec3(0, 0, 1));
-			transform = glm::translate(transform, glm::vec3(-0.001, 0, 0));
+			transform[0]->MoveLocal(-0.001, 0, 0);
 		}
 
 		// Clear our screen every frame
@@ -128,26 +143,18 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader->Bind();
+
 		shader->SetUniform("u_CamPos", camera->GetPosition());
 
-		//Paddle
-		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform);
-		shader->SetUniformMatrix("u_Model", transform);
-		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform));
-		vao->Render();
-
 		//Ball
-		transform2 = glm::translate(transform2, glm::vec3(0.0f, 0.005f, 0.f));
-		
-		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform2);
-		shader->SetUniformMatrix("u_Model", transform2);
-		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transform2));
-		vao2->Render();
+		transform[1]->MoveLocal(0.0f, 0.0005f, 0.f);
 
-		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transformWall);
-		shader->SetUniformMatrix("u_Model", transformWall);
-		shader->SetUniformMatrix("u_ModelRotation", glm::mat3(transformWall));
-		vaoWall->Render();
+
+		//RenderVAO(shader, vao[1], camera, transform[1]);
+		for (int ix = 0; ix < 2; ix++) {
+			// TODO: Apply materials
+			RenderVAO(shader, vao[ix], camera, transform[ix]);
+		}
 		
 		// Present our image to windows
 		glfwSwapBuffers(window);
@@ -158,16 +165,6 @@ int main() {
 	return 0;
 }
 
-void RenderVAO
-(
-const Shader::sptr& shader,
-const VertexArrayObject::sptr& vao,
-const Camera::sptr& camera,
-const Transform::sptr& 
-)
-{
-	return;
-}
 
 bool checkCollision()
 {
