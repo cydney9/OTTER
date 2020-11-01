@@ -7,6 +7,8 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "Texture2D.h"
+#include "Texture2DData.h"
 
 //Credit: Used starter from gdw project to build up from
 
@@ -36,6 +38,13 @@ void RenderVAO
 	shader->SetUniformMatrix("u_Model", transform->LocalTransform());
 	vao->Render();
 }
+
+struct Material
+{
+	Texture2D::sptr Albedo;
+	Texture2D::sptr Specular;
+	float           Shininess;
+};
 
 int main() {
 	// Initialize GLFW
