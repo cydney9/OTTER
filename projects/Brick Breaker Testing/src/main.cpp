@@ -237,13 +237,14 @@ int main() {
 	}
 
 	// Create some transforms and initialize them
-	Transform::sptr transform[6];
+	Transform::sptr transform[7];
 	transform[0] = Transform::Create();
 	transform[1] = Transform::Create();
 	transform[2] = Transform::Create();
 	transform[3] = Transform::Create();
 	transform[4] = Transform::Create();
 	transform[5] = Transform::Create();
+	transform[6] = Transform::Create();
 
 	transform[0]->SetLocalPosition(0.0f, 2.5f, 0.0f);
 	transform[0]->SetLocalScale(0.8f, 0.2f, 0.5f);
@@ -263,19 +264,23 @@ int main() {
 	transform[5]->SetLocalPosition(0.f, -13.f, 0.10f);
 	transform[5]->SetLocalScale(5.f, 1.f, 1.0f);
 
+	transform[6]->SetLocalPosition(0.f, 0.f, -0.5f);
+	transform[6]->SetLocalScale(25.f, 25.f, 0.0f);
+
 	// We'll store all our VAOs into a nice array for easy access
 		//VAOS
 	VertexArrayObject::sptr vao0 = ObjLoader::LoadFromFile("Player.obj");
 	VertexArrayObject::sptr vao1 = ObjLoader::LoadFromFile("ball.obj");
 	VertexArrayObject::sptr vao2 = ObjLoader::LoadFromFile("wall.obj");
 
-	VertexArrayObject::sptr vao[6];
+	VertexArrayObject::sptr vao[7];
 	vao[0] = vao0;
 	vao[1] = vao1;
 	vao[2] = vao2;
 	vao[3] = vao2;
 	vao[4] = vao2;
 	vao[5] = vao2;
+	vao[6] = vao2;
 
 	
 	//For bricks
@@ -294,6 +299,7 @@ int main() {
 	Texture2DData::sptr specularMap = Texture2DData::LoadFromFile("images/Stone_001_Specular.png");
 	Texture2DData::sptr woodwallMap = Texture2DData::LoadFromFile("images/woodwall.png", true);
 	Texture2DData::sptr yellowMap = Texture2DData::LoadFromFile("images/yellow.png", true);
+	Texture2DData::sptr blackMap = Texture2DData::LoadFromFile("images/black.png", true);
 
 	// Create a texture from the data
 	Texture2D::sptr blue = Texture2D::Create();
@@ -302,6 +308,8 @@ int main() {
 	woodwall->LoadData(woodwallMap);
 	Texture2D::sptr yellow = Texture2D::Create();
 	yellow->LoadData(yellowMap);
+	Texture2D::sptr black = Texture2D::Create();
+	black->LoadData(blackMap);
 
 	Texture2D::sptr diffuse = Texture2D::Create();
 	diffuse->LoadData(diffuseMap);
@@ -319,7 +327,7 @@ int main() {
 	texture2->Clear();
 
 	// TODO: store some info about our materials for each object
-	Material materials[6];
+	Material materials[7];
 	materials[0].Albedo = woodwall;
 	materials[0].Specular = specular;
 	materials[0].Shininess = 40.0f;
@@ -338,6 +346,9 @@ int main() {
 	materials[5].Albedo = woodwall;
 	materials[5].Specular = specular;
 	materials[5].Shininess = 16.0f;
+	materials[6].Albedo = black;
+	materials[6].Specular = specular;
+	materials[6].Shininess = 16.0f;
 
 	//Brick Materials
 	Texture2DData::sptr brickMap = Texture2DData::LoadFromFile("images/brick.png");
@@ -372,15 +383,12 @@ int main() {
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x <= 2)
 				transform[0]->MoveLocal(0.001, 0, 0);
-			else
-				std::cout << "stopped";
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			//transform2 = glm::rotate(transform2, -0.001f, glm::vec3(0, 0, 1));
 			if (transform[0]->GetLocalPosition().x >= -2)
 				transform[0]->MoveLocal(-0.001, 0, 0);
-			else
-				std::cout << "stopped";
+
 		}
 
 		
@@ -405,7 +413,7 @@ int main() {
 		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);
 
 		// Render all VAOs in our scene
-		for(int ix = 0; ix <= 5; ix++) {
+		for(int ix = 0; ix <= 6; ix++) {
 			// TODO: Apply materials
 			materials[ix].Albedo->Bind(0);
 			materials[ix].Specular->Bind(1);
