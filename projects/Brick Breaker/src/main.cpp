@@ -12,6 +12,14 @@
 
 //Credit: Used starter from gdw project to build up from
 
+void checkCollision(Transform::sptr ball, Transform::sptr paddle)
+{
+	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y / 2)))
+	{
+		ball->SetLocalPosition(0.0f, -0.5f, 0.0f);
+	}
+}
+
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
 	RECT desktop;
@@ -158,6 +166,7 @@ int main() {
 		//Ball
 		transform[1]->MoveLocal(0.0f, 0.0005f, 0.f);
 
+		checkCollision(transform[1], transform[0]);
 
 		//RenderVAO(shader, vao[1], camera, transform[1]);
 		for (int ix = 0; ix < 2; ix++) {
@@ -175,7 +184,3 @@ int main() {
 }
 
 
-bool checkCollision()
-{
-	return 0;
-}
