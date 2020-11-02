@@ -116,10 +116,6 @@ float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 		ballYSpeed = -ballYSpeed;
 		
 	}
-	else if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y * 2)))
-	{
-		ball->SetLocalPosition(0.0f, -0.01f, 0.0f);
-	}
 	
 	return ballYSpeed;
 }
@@ -141,14 +137,18 @@ float checkCollisionBallXSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 
 	if ((ball->GetLocalPosition().x < -3))
 	{
-		std::cout << "out";
 		ballXSpeed = ballXSpeed*-1;
 	}
 	if ((ball->GetLocalPosition().x > 3))
 	{
-		std::cout << "out";
 		ballXSpeed = ballXSpeed * -1;
 	}
+	else if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y * 2)))
+	{
+		ball->SetLocalPosition(0.0f, -0.01f, 0.0f);
+		ballXSpeed = 0.0f;
+	}
+
 	return ballXSpeed;
 }
 void RenderVAO(
@@ -251,7 +251,7 @@ int main() {
 
 	// TODO: load textures
 	// Load our texture data from a file
-	Texture2DData::sptr diffuseMap = Texture2DData::LoadFromFile("images/Stone_001_Diffuse.png");
+	Texture2DData::sptr diffuseMap = Texture2DData::LoadFromFile("images/sample.png");
 	Texture2DData::sptr specularMap = Texture2DData::LoadFromFile("images/Stone_001_Specular.png");
 	// Create a texture from the data
 	Texture2D::sptr diffuse = Texture2D::Create();
