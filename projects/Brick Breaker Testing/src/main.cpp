@@ -119,17 +119,22 @@ float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 	
 	return ballYSpeed;
 }
+
 float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ballYSpeed) 
 {
 	float max, min;
 	max = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
-	min = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
-	if (ball->GetLocalPosition().y >= (brick->GetLocalPosition().y - (brick->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
+	min = brick->GetLocalPosition().x - (brick->GetLocalScale().x);
+
+	if (brick->GetLocalPosition().z == 0.0f)
 	{
-
-		ballYSpeed = -ballYSpeed;
+		if ((ball->GetLocalPosition().y <= brick->GetLocalPosition().y + brick->GetLocalScale().y ))
+		{
+			ballYSpeed = -ballYSpeed ;
+			brick->SetLocalPosition(0.0f, 0.0f, -3.0f);
+			std::cout <<  brick << " Destroyed\n";
+		}
 	}
-
 
 	return ballYSpeed;
 	
@@ -281,12 +286,6 @@ int main() {
 	
 			
 	}
-
-
-
-
-
-
 
 	// Create some transforms and initialize them
 	Transform::sptr transform[7];
@@ -444,7 +443,6 @@ int main() {
 				transform[0]->MoveLocal(0.001, 0, 0);
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			//transform2 = glm::rotate(transform2, -0.001f, glm::vec3(0, 0, 1));
 			if (transform[0]->GetLocalPosition().x >= -2)
 				transform[0]->MoveLocal(-0.001, 0, 0);
 
@@ -467,13 +465,12 @@ int main() {
 
 		ballYSpeed = checkCollisionBallYSpeed(transform[1], transform[0], ballYSpeed);
 		ballXSpeed = checkCollisionBallXSpeed(transform[1], transform[0], ballXSpeed);
+
 		for (int i = 0; i < numB; i++)
 		{
-			if (transform[1]->GetLocalPosition().x - transformB[i]->GetLocalPosition().x <=1 &&
-				transform[1]->GetLocalPosition().y - transformB[i]->GetLocalPosition().y <= 1) 
+			if (transform[1]->GetLocalPosition().x - transformB[i]->GetLocalPosition().x <=1 && transform[1]->GetLocalPosition().y - transformB[i]->GetLocalPosition().y <= 1) 
 			{
 				ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed);
-				ballXSpeed = checkCollisionBrickX(transform[1], transformB[i], ballXSpeed);
 			}
 		
 		}
