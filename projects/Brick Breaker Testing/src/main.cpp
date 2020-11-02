@@ -119,10 +119,37 @@ float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 	
 	return ballYSpeed;
 }
-float checkCollisionBrick(Transform::sptr ball, Transform::sptr brick, float ballSpeed) 
+float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ballYSpeed) 
 {
 	float max, min;
 	max = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
+	min = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
+	if (ball->GetLocalPosition().y >= (brick->GetLocalPosition().y - (brick->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
+	{
+
+		ballYSpeed = -ballYSpeed;
+	}
+
+
+	return ballYSpeed;
+	
+}
+float checkCollisionBrickX(Transform::sptr ball, Transform::sptr brick, float ballXSpeed)
+{
+	float max, min, middle;
+	max = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
+	min = brick->GetLocalPosition().x - (brick->GetLocalScale().x);
+	middle = max + min / 2;
+
+	if (ball->GetLocalPosition().y >= (brick->GetLocalPosition().y - (brick->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
+	{
+		if (ball->GetLocalPosition().x > middle)
+			ballXSpeed = 0.0025;
+		if (ball->GetLocalPosition().x < middle)
+			ballXSpeed = -0.0025;
+	}
+
+	return ballXSpeed;
 }
 
 float checkCollisionBallXSpeed(Transform::sptr ball, Transform::sptr paddle, float ballXSpeed)
@@ -440,7 +467,16 @@ int main() {
 
 		ballYSpeed = checkCollisionBallYSpeed(transform[1], transform[0], ballYSpeed);
 		ballXSpeed = checkCollisionBallXSpeed(transform[1], transform[0], ballXSpeed);
-
+		for (int i = 0; i < numB; i++)
+		{
+			if (transform[1]->GetLocalPosition().x - transformB[i]->GetLocalPosition().x <=1 &&
+				transform[1]->GetLocalPosition().y - transformB[i]->GetLocalPosition().y <= 1) 
+			{
+				ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed);
+				ballXSpeed = checkCollisionBrickX(transform[1], transformB[i], ballXSpeed);
+			}
+		
+		}
 		//Ball
 		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);
 
