@@ -100,6 +100,14 @@ bool initGLAD() {
 	return true;
 }
 
+void checkCollision(Transform::sptr ball, Transform::sptr paddle)
+{
+	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y / 2)))
+	{
+		ball->SetLocalPosition(0.0f, -0.5f, 0.0f);
+	}
+}
+
 void RenderVAO(
 	const Shader::sptr& shader,
 	const VertexArrayObject::sptr& vao,
@@ -330,6 +338,8 @@ int main() {
 
 		//Ball
 		transform[1]->MoveLocal(0.0f, 0.0005f, 0.f);
+
+		checkCollision(transform[1], transform[0]);
 
 		// Render all VAOs in our scene
 		for(int ix = 0; ix < 3; ix++) {
