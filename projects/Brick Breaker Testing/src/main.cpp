@@ -226,9 +226,9 @@ int main() {
 	shader->LoadShaderPartFromFile("shaders/frag_blinn_phong_textured.glsl", GL_FRAGMENT_SHADER);  
 	shader->Link();  
 
-	glm::vec3 lightPos = glm::vec3(0.0f, 2.0f, 2.0f);
+	glm::vec3 lightPos = glm::vec3(0.0f, -10.0f, 10.0f);
 	glm::vec3 lightCol = glm::vec3(0.3f, 0.2f, 0.5f);
-	float     lightAmbientPow = 0.5f;
+	float     lightAmbientPow = 5.0f;
 	float     lightSpecularPow = 1.0f;
 	glm::vec3 ambientCol = glm::vec3(1.0f);
 	float     ambientPow = 0.5f;
@@ -493,9 +493,9 @@ int main() {
 		for (int ixB = 0; ixB < numB; ixB++) 
 		{
 			// TODO: Apply materials
-			materials[0].Albedo->Bind(0);
-			materials[0].Specular->Bind(1);
-			shader->SetUniform("u_Shininess", materials[0].Shininess);
+			materialsBrick[0].Albedo->Bind(0);
+			materialsBrick[0].Specular->Bind(1);
+			shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
 		
 		}
