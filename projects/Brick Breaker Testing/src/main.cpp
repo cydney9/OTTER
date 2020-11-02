@@ -109,6 +109,12 @@ float checkCollision(Transform::sptr ball, Transform::sptr paddle, float ballYSp
 		ballYSpeed = -ballYSpeed;
 		return ballYSpeed;
 	}
+	if (ball->GetLocalPosition().y < -12.0)
+	{
+		std::cout << "Over";
+		ballYSpeed = -ballYSpeed;
+		return ballYSpeed;
+	}
 	else
 		return ballYSpeed;
 	/*if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y * 2)))
@@ -210,7 +216,7 @@ int main() {
 	transform[1]->SetLocalScale(0.125f, 0.125f, 0.125f);
 	float ballYSpeed = 0.0025f;
 
-	transform[2]->SetLocalScale(100.f, 100.f, 0.01f);
+	transform[2]->SetLocalScale(25.f, 25.f, 0.01f);
 
 	// We'll store all our VAOs into a nice array for easy access
 		//VAOS
@@ -254,7 +260,7 @@ int main() {
 
 	
 	camera = Camera::Create();
-	camera->SetPosition(glm::vec3(0, 3, 3)); // Set initial position
+	camera->SetPosition(glm::vec3(0, 2, 3)); // Set initial position
 	camera->SetUp(glm::vec3(0, 0, 1)); // Use a z-up coordinate system
 	camera->LookAt(glm::vec3(0.0f)); // Look at center of the screen
 	camera->SetFovDegrees(90.0f); // Set an initial FOV
