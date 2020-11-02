@@ -293,13 +293,15 @@ int main() {
 	Texture2DData::sptr diffuseMap = Texture2DData::LoadFromFile("images/sample.png");
 	Texture2DData::sptr specularMap = Texture2DData::LoadFromFile("images/Stone_001_Specular.png");
 	Texture2DData::sptr woodwallMap = Texture2DData::LoadFromFile("images/woodwall.png", true);
-
+	Texture2DData::sptr yellowMap = Texture2DData::LoadFromFile("images/yellow.png", true);
 
 	// Create a texture from the data
 	Texture2D::sptr blue = Texture2D::Create();
 	blue->LoadData(blueMap);
 	Texture2D::sptr woodwall = Texture2D::Create();
 	woodwall->LoadData(woodwallMap);
+	Texture2D::sptr yellow = Texture2D::Create();
+	yellow->LoadData(yellowMap);
 
 	Texture2D::sptr diffuse = Texture2D::Create();
 	diffuse->LoadData(diffuseMap);
@@ -318,10 +320,10 @@ int main() {
 
 	// TODO: store some info about our materials for each object
 	Material materials[6];
-	materials[0].Albedo = diffuse;
+	materials[0].Albedo = woodwall;
 	materials[0].Specular = specular;
 	materials[0].Shininess = 40.0f;
-	materials[1].Albedo = diffuse;
+	materials[1].Albedo = yellow;
 	materials[1].Specular = specular;
 	materials[1].Shininess = 16.0f;
 	materials[2].Albedo = blue;
