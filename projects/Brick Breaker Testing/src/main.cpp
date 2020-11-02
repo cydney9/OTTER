@@ -251,9 +251,12 @@ int main() {
 
 	// TODO: load textures
 	// Load our texture data from a file
+	Texture2DData::sptr blueMap = Texture2DData::LoadFromFile("images/blue.png", true);
 	Texture2DData::sptr diffuseMap = Texture2DData::LoadFromFile("images/sample.png");
 	Texture2DData::sptr specularMap = Texture2DData::LoadFromFile("images/Stone_001_Specular.png");
 	// Create a texture from the data
+	Texture2D::sptr blue = Texture2D::Create();
+	blue->LoadData(blueMap);
 	Texture2D::sptr diffuse = Texture2D::Create();
 	diffuse->LoadData(diffuseMap);
 	Texture2D::sptr specular = Texture2D::Create();
@@ -274,7 +277,7 @@ int main() {
 	materials[1].Albedo = diffuse;
 	materials[1].Specular = specular;
 	materials[1].Shininess = 16.0f;
-	materials[2].Albedo = diffuse;
+	materials[2].Albedo = blue;
 	materials[2].Specular = specular;
 	materials[2].Shininess = 5.0f;
 
