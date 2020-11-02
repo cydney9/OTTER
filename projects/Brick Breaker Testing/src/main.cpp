@@ -100,38 +100,57 @@ bool initGLAD() {
 	return true;
 }
 
-float checkCollision(Transform::sptr ball, Transform::sptr paddle, float ballYSpeed)
+float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, float ballYSpeed)
 {
+	float max, min;
+	max = paddle->GetLocalPosition().x + (paddle->GetLocalScale().x);
+	min = paddle->GetLocalPosition().x - (paddle->GetLocalScale().x);
 	
-	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y - (paddle->GetLocalScale().y)))
+	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y - (paddle->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
 	{
 		
 		ballYSpeed = -ballYSpeed;
-		return ballYSpeed;
 	}
-	if (ball->GetLocalPosition().y < -12.0)
+	else if (ball->GetLocalPosition().y < -12.0)
 	{
-		std::cout << "Over";
 		ballYSpeed = -ballYSpeed;
-		return ballYSpeed;
+		
 	}
-	else
-		return ballYSpeed;
-	/*if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y * 2)))
+	else if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y * 2)))
 	{
 		ball->SetLocalPosition(0.0f, -0.01f, 0.0f);
-	}*/
-
-	// collision x-axis?
-	//bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
-	//	two.Position.x + two.Size.x >= one.Position.x;
-	//// collision y-axis?
-	//bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
-	//	two.Position.y + two.Size.y >= one.Position.y;
-	//// collision only if on both axes
-	//return collisionX && collisionY;
+	}
+	
+	return ballYSpeed;
 }
 
+float checkCollisionBallXSpeed(Transform::sptr ball, Transform::sptr paddle, float ballXSpeed)
+{
+	float max, min, middle;
+	max = paddle->GetLocalPosition().x + (paddle->GetLocalScale().x);
+	min = paddle->GetLocalPosition().x - (paddle->GetLocalScale().x);
+	middle = max + min / 2;
+
+	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y - (paddle->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
+	{
+		if (ball->GetLocalPosition().x > middle)
+		ballXSpeed = 0.0025;
+		if (ball->GetLocalPosition().x < middle)
+			ballXSpeed = -0.0025;
+	}
+
+	if ((ball->GetLocalPosition().x < -3))
+	{
+		std::cout << "out";
+		ballXSpeed = ballXSpeed*-1;
+	}
+	if ((ball->GetLocalPosition().x > 3))
+	{
+		std::cout << "out";
+		ballXSpeed = ballXSpeed * -1;
+	}
+	return ballXSpeed;
+}
 void RenderVAO(
 	const Shader::sptr& shader,
 	const VertexArrayObject::sptr& vao,
@@ -215,6 +234,7 @@ int main() {
 
 	transform[1]->SetLocalScale(0.125f, 0.125f, 0.125f);
 	float ballYSpeed = 0.0025f;
+	float ballXSpeed = 0.0f;
 
 	transform[2]->SetLocalScale(25.f, 25.f, 0.01f);
 
@@ -301,10 +321,11 @@ int main() {
 		shader->SetUniform("s_Specular", 1); 
 
 
-		ballYSpeed =checkCollision(transform[1], transform[0], ballYSpeed);
+		ballYSpeed = checkCollisionBallYSpeed(transform[1], transform[0], ballYSpeed);
+		ballXSpeed = checkCollisionBallXSpeed(transform[1], transform[0], ballXSpeed);
 
 		//Ball
-		transform[1]->MoveLocal(0.0f, ballYSpeed, 0.f);
+		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);
 
 		// Render all VAOs in our scene
 		for(int ix = 0; ix < 3; ix++) {
