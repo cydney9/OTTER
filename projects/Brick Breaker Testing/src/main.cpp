@@ -231,7 +231,7 @@ int main() {
 	for (int b = 0; b < 3; b++)
 	{
 
-		transformB[b]->SetLocalPosition(1.0f, -5.5f, 0.0f);
+		transformB[b]->SetLocalPosition(1.0f + b, -5.5f +b, 0.0f);
 		transformB[b]->SetLocalScale(0.2f, 0.2f, 0.2f);
 
 	}
@@ -292,13 +292,18 @@ int main() {
 	Texture2DData::sptr blueMap = Texture2DData::LoadFromFile("images/blue.png", true);
 	Texture2DData::sptr diffuseMap = Texture2DData::LoadFromFile("images/sample.png");
 	Texture2DData::sptr specularMap = Texture2DData::LoadFromFile("images/Stone_001_Specular.png");
+
 	// Create a texture from the data
 	Texture2D::sptr blue = Texture2D::Create();
 	blue->LoadData(blueMap);
+
 	Texture2D::sptr diffuse = Texture2D::Create();
 	diffuse->LoadData(diffuseMap);
+
 	Texture2D::sptr specular = Texture2D::Create();
 	specular->LoadData(specularMap);
+
+
 	// Creating an empty texture
 	Texture2DDescription desc = Texture2DDescription();
 	desc.Width = 1;
@@ -328,7 +333,18 @@ int main() {
 	materials[5].Specular = specular;
 	materials[5].Shininess = 16.0f;
 
-	
+	//Brick Materials
+	Texture2DData::sptr brickMap = Texture2DData::LoadFromFile("images/brick.png");
+
+	Texture2D::sptr brick = Texture2D::Create();
+	brick->LoadData(brickMap);
+
+
+	Material materialsBrick[1];
+		materialsBrick[0].Albedo = brick;
+		materialsBrick[0].Specular = specular;
+		materialsBrick[0].Shininess = 16.0f;
+
 	camera = Camera::Create();
 	camera->SetPosition(glm::vec3(0, 2, 3)); // Set initial position
 	camera->SetUp(glm::vec3(0, 0, 1)); // Use a z-up coordinate system
@@ -395,9 +411,9 @@ int main() {
 		for (int ixB = 0; ixB < 3; ixB++) 
 		{
 			// TODO: Apply materials
-			materials[ixB].Albedo->Bind(0);
-			materials[ixB].Specular->Bind(1);
-			shader->SetUniform("u_Shininess", materials[ixB].Shininess);
+			materialsBrick[0].Albedo->Bind(0);
+			materialsBrick[0].Specular->Bind(1);
+			shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
 		
 		}
