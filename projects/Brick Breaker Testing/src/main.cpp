@@ -224,10 +224,13 @@ int main() {
 	// NEW STUFF
 
 	// Create some transforms and initialize them
-	Transform::sptr transform[3];
+	Transform::sptr transform[6];
 	transform[0] = Transform::Create();
 	transform[1] = Transform::Create();
 	transform[2] = Transform::Create();
+	transform[3] = Transform::Create();
+	transform[4] = Transform::Create();
+	transform[5] = Transform::Create();
 
 	transform[0]->SetLocalPosition(0.0f, 2.5f, 0.0f);
 	transform[0]->SetLocalScale(0.8f, 0.2f, 0.5f);
@@ -238,16 +241,28 @@ int main() {
 
 	transform[2]->SetLocalScale(25.f, 25.f, 0.01f);
 
+	transform[3]->SetLocalPosition(-4.f, 0.f, 0.10f);
+	transform[3]->SetLocalScale(1.f, 15.f, 1.0f);
+
+	transform[4]->SetLocalPosition(4.f, 0.f, 0.10f);
+	transform[4]->SetLocalScale(1.f, 15.f, 1.0f);
+
+	transform[5]->SetLocalPosition(0.f, -13.f, 0.10f);
+	transform[5]->SetLocalScale(5.f, 1.f, 1.0f);
+
 	// We'll store all our VAOs into a nice array for easy access
 		//VAOS
 	VertexArrayObject::sptr vao0 = ObjLoader::LoadFromFile("Player.obj");
 	VertexArrayObject::sptr vao1 = ObjLoader::LoadFromFile("ball.obj");
 	VertexArrayObject::sptr vao2 = ObjLoader::LoadFromFile("wall.obj");
 
-	VertexArrayObject::sptr vao[3];
+	VertexArrayObject::sptr vao[6];
 	vao[0] = vao0;
 	vao[1] = vao1;
 	vao[2] = vao2;
+	vao[3] = vao2;
+	vao[4] = vao2;
+	vao[5] = vao2;
 
 	// TODO: load textures
 	// Load our texture data from a file
@@ -270,7 +285,7 @@ int main() {
 	texture2->Clear();
 
 	// TODO: store some info about our materials for each object
-	Material materials[3];
+	Material materials[6];
 	materials[0].Albedo = diffuse;
 	materials[0].Specular = specular;
 	materials[0].Shininess = 40.0f;
@@ -280,6 +295,15 @@ int main() {
 	materials[2].Albedo = blue;
 	materials[2].Specular = specular;
 	materials[2].Shininess = 5.0f;
+	materials[3].Albedo = diffuse;
+	materials[3].Specular = specular;
+	materials[3].Shininess = 16.0f;
+	materials[4].Albedo = diffuse;
+	materials[4].Specular = specular;
+	materials[4].Shininess = 16.0f;
+	materials[5].Albedo = diffuse;
+	materials[5].Specular = specular;
+	materials[5].Shininess = 16.0f;
 
 	
 	camera = Camera::Create();
@@ -301,12 +325,17 @@ int main() {
 		float dt = static_cast<float>(thisFrame - lastFrame);
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			//transform2 = glm::rotate(transform2, 0.001f, glm::vec3(0, 0, 1));
-			transform[0]->MoveLocal(0.001, 0, 0);
+			if (transform[0]->GetLocalPosition().x <= 2)
+				transform[0]->MoveLocal(0.001, 0, 0);
+			else
+				std::cout << "stopped";
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			//transform2 = glm::rotate(transform2, -0.001f, glm::vec3(0, 0, 1));
-			transform[0]->MoveLocal(-0.001, 0, 0);
+			if (transform[0]->GetLocalPosition().x >= -2)
+				transform[0]->MoveLocal(-0.001, 0, 0);
+			else
+				std::cout << "stopped";
 		}
 
 		
@@ -331,7 +360,7 @@ int main() {
 		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);
 
 		// Render all VAOs in our scene
-		for(int ix = 0; ix < 3; ix++) {
+		for(int ix = 0; ix <= 5; ix++) {
 			// TODO: Apply materials
 			materials[ix].Albedo->Bind(0);
 			materials[ix].Specular->Bind(1);
