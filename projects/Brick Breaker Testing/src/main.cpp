@@ -231,8 +231,8 @@ int main() {
 	for (int b = 0; b < 3; b++)
 	{
 
-		transformB[b]->SetLocalPosition(0.0f + b, 3.0f + b, 0.5f);
-		transformB[b]->SetLocalScale(0.8f, 0.2f, 0.5f);
+		transformB[b]->SetLocalPosition(1.0f, -5.5f, 0.0f);
+		transformB[b]->SetLocalScale(0.2f, 0.2f, 0.2f);
 
 	}
 
@@ -283,7 +283,6 @@ int main() {
 
 
 	VertexArrayObject::sptr vaoB[3];
-
 	vaoB[0] = vaoB0;
 	vaoB[1] = vaoB0;
 	vaoB[2] = vaoB0;
@@ -391,17 +390,18 @@ int main() {
 			shader->SetUniform("u_Shininess", materials[ix].Shininess);
 			RenderVAO(shader, vao[ix], camera, transform[ix]);		
 		}
+
 		//Render all VAO for bricks in our scene
-		for (int ixB = 0; ixB < 2; ixB++) 
+		for (int ixB = 0; ixB < 3; ixB++) 
 		{
 			// TODO: Apply materials
-			//materials[ixB].Albedo->Bind(0);
-			//materials[ixB].Specular->Bind(1);
-			//shader->SetUniform("u_Shininess", materials[ixB].Shininess);
+			materials[ixB].Albedo->Bind(0);
+			materials[ixB].Specular->Bind(1);
+			shader->SetUniform("u_Shininess", materials[ixB].Shininess);
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
-
 		
 		}
+
 		glfwSwapBuffers(window);
 		lastFrame = thisFrame;
 	}
