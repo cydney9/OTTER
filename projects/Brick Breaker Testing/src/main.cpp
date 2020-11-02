@@ -252,7 +252,7 @@ int main() {
 	float ballYSpeed = 0.0025f;
 	float ballXSpeed = 0.0f;
 
-	transform[2]->SetLocalScale(25.f, 25.f, 0.01f);
+	transform[2]->SetLocalScale(5.f, 25.f, 0.01f);
 
 	transform[3]->SetLocalPosition(-4.f, 0.f, 0.10f);
 	transform[3]->SetLocalScale(1.f, 15.f, 1.0f);
@@ -292,10 +292,14 @@ int main() {
 	Texture2DData::sptr blueMap = Texture2DData::LoadFromFile("images/blue.png", true);
 	Texture2DData::sptr diffuseMap = Texture2DData::LoadFromFile("images/sample.png");
 	Texture2DData::sptr specularMap = Texture2DData::LoadFromFile("images/Stone_001_Specular.png");
+	Texture2DData::sptr woodwallMap = Texture2DData::LoadFromFile("images/woodwall.png", true);
+
 
 	// Create a texture from the data
 	Texture2D::sptr blue = Texture2D::Create();
 	blue->LoadData(blueMap);
+	Texture2D::sptr woodwall = Texture2D::Create();
+	woodwall->LoadData(woodwallMap);
 
 	Texture2D::sptr diffuse = Texture2D::Create();
 	diffuse->LoadData(diffuseMap);
@@ -323,13 +327,13 @@ int main() {
 	materials[2].Albedo = blue;
 	materials[2].Specular = specular;
 	materials[2].Shininess = 5.0f;
-	materials[3].Albedo = diffuse;
+	materials[3].Albedo = woodwall;
 	materials[3].Specular = specular;
 	materials[3].Shininess = 16.0f;
-	materials[4].Albedo = diffuse;
+	materials[4].Albedo = woodwall;
 	materials[4].Specular = specular;
 	materials[4].Shininess = 16.0f;
-	materials[5].Albedo = diffuse;
+	materials[5].Albedo = woodwall;
 	materials[5].Specular = specular;
 	materials[5].Shininess = 16.0f;
 
