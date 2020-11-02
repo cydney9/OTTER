@@ -194,12 +194,12 @@ int main() {
 	shader->LoadShaderPartFromFile("shaders/frag_blinn_phong_textured.glsl", GL_FRAGMENT_SHADER);  
 	shader->Link();  
 
-	glm::vec3 lightPos = glm::vec3(4.0f, 6.0f, 2.0f);
+	glm::vec3 lightPos = glm::vec3(0.0f, 2.0f, 2.0f);
 	glm::vec3 lightCol = glm::vec3(0.3f, 0.2f, 0.5f);
-	float     lightAmbientPow = 1.0f;
+	float     lightAmbientPow = 0.5f;
 	float     lightSpecularPow = 1.0f;
 	glm::vec3 ambientCol = glm::vec3(1.0f);
-	float     ambientPow = 0.7f;
+	float     ambientPow = 0.5f;
 	float     shininess = 4.0f;
 	float     lightLinearFalloff = 0.09f;
 	float     lightQuadraticFalloff = 0.032f;
