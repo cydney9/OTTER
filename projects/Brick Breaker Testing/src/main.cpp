@@ -26,11 +26,11 @@
 #include "Utilities/InputHelpers.h"
 #include "Utilities/MeshBuilder.h"
 #include "Utilities/MeshFactory.h"
-#include "Utilities/NotObjLoader.h"
 #include "Utilities/ObjLoader.h"
 #include "Utilities/VertexTypes.h"
 
 #define LOG_GL_NOTIFICATIONS
+
 
 /*
 	Handles debug messages from OpenGL
@@ -83,7 +83,7 @@ bool initGLFW() {
 #endif
 	
 	//Create a new GLFW window
-	window = glfwCreateWindow(800, 800, "Brick Breaker", nullptr, nullptr);
+	window = glfwCreateWindow(1200, 900, "Brick Breaker", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	// Set our window resized callback
@@ -100,12 +100,30 @@ bool initGLAD() {
 	return true;
 }
 
-void checkCollision(Transform::sptr ball, Transform::sptr paddle)
+float checkCollision(Transform::sptr ball, Transform::sptr paddle, float ballYSpeed)
 {
-	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y / 2)))
+	
+	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y - (paddle->GetLocalScale().y)))
 	{
-		ball->SetLocalPosition(0.0f, -0.5f, 0.0f);
+		
+		ballYSpeed = -ballYSpeed;
+		return ballYSpeed;
 	}
+	else
+		return ballYSpeed;
+	/*if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y + (paddle->GetLocalScale().y * 2)))
+	{
+		ball->SetLocalPosition(0.0f, -0.01f, 0.0f);
+	}*/
+
+	// collision x-axis?
+	//bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
+	//	two.Position.x + two.Size.x >= one.Position.x;
+	//// collision y-axis?
+	//bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
+	//	two.Position.y + two.Size.y >= one.Position.y;
+	//// collision only if on both axes
+	//return collisionX && collisionY;
 }
 
 void RenderVAO(
@@ -118,46 +136,6 @@ void RenderVAO(
 	shader->SetUniformMatrix("u_Model", transform->LocalTransform());
 	shader->SetUniformMatrix("u_NormalMatrix", transform->NormalMatrix());
 	vao->Render();
-}
-
-void ManipulateTransformWithInput(const Transform::sptr& transform, float dt) {
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		transform->MoveLocal(0.0f, -1.0f * dt, 0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { 
-		transform->MoveLocal(0.0f,  1.0f * dt, 0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		transform->MoveLocal(-1.0f * dt, 0.0f, 0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		transform->MoveLocal( 1.0f * dt, 0.0f,  0.0f); 
-	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		transform->MoveLocal(0.0f, 0.0f,  1.0f * dt);
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-		transform->MoveLocal(0.0f, 0.0f, -1.0f * dt);
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) { 
-		transform->RotateLocal(0.0f, -45.0f * dt, 0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		transform->RotateLocal(0.0f,  45.0f * dt,0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		transform->RotateLocal( 45.0f * dt, 0.0f,0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		transform->RotateLocal(-45.0f * dt, 0.0f, 0.0f);
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		transform->RotateLocal(0.0f, 0.0f, 45.0f * dt);
-	}
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		transform->RotateLocal(0.0f, 0.0f, -45.0f * dt);
-	}
 }
 
 struct Material
@@ -184,7 +162,6 @@ int main() {
 
 	// Enable texturing
 	glEnable(GL_TEXTURE_2D);
-	
 		
 	// Load our shaders
 	Shader::sptr shader = Shader::Create();
@@ -231,7 +208,7 @@ int main() {
 	transform[0]->SetLocalScale(0.8f, 0.2f, 0.5f);
 
 	transform[1]->SetLocalScale(0.125f, 0.125f, 0.125f);
-	float ballPosX = 0.25f;
+	float ballYSpeed = 0.0025f;
 
 	transform[2]->SetLocalScale(100.f, 100.f, 0.01f);
 
@@ -282,28 +259,7 @@ int main() {
 	camera->LookAt(glm::vec3(0.0f)); // Look at center of the screen
 	camera->SetFovDegrees(90.0f); // Set an initial FOV
 	camera->SetOrthoHeight(3.0f);
-
-	// We'll use a vector to store all our key press events for now
-	std::vector<KeyPressWatcher> keyToggles;
-	// This is an example of a key press handling helper. Look at InputHelpers.h an .cpp to see
-	// how this is implemented. Note that the ampersand here is capturing the variables within
-	// the scope. If you wanted to do some method on the class, your best bet would be to give it a method and
-	// use std::bind
-	keyToggles.emplace_back(GLFW_KEY_T, [&](){ camera->ToggleOrtho(); });
-
-	int selectedVao = 2; // select cube by default
-	keyToggles.emplace_back(GLFW_KEY_KP_ADD, [&]() {
-		selectedVao++;
-		if (selectedVao >= 4)
-			selectedVao = 1;
-	});
-	keyToggles.emplace_back(GLFW_KEY_KP_SUBTRACT, [&]() {
-		selectedVao--;
-		if (selectedVao <= 0)
-			selectedVao = 3;
-	});
-
-		
+	
 	// Our high-precision timer
 	double lastFrame = glfwGetTime();
 	
@@ -324,6 +280,8 @@ int main() {
 			transform[0]->MoveLocal(-0.001, 0, 0);
 		}
 
+		
+
 		glClearColor(0.08f, 0.17f, 0.31f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -336,10 +294,11 @@ int main() {
 		shader->SetUniform("s_Diffuse",  0);
 		shader->SetUniform("s_Specular", 1); 
 
-		//Ball
-		transform[1]->MoveLocal(0.0f, 0.0005f, 0.f);
 
-		checkCollision(transform[1], transform[0]);
+		ballYSpeed =checkCollision(transform[1], transform[0], ballYSpeed);
+
+		//Ball
+		transform[1]->MoveLocal(0.0f, ballYSpeed, 0.f);
 
 		// Render all VAOs in our scene
 		for(int ix = 0; ix < 3; ix++) {

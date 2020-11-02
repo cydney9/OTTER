@@ -16,6 +16,7 @@ public:
 	Transform& operator=(const Transform& other) = delete;
 	Transform& operator=(Transform&& other) = delete;
 
+
 	typedef std::shared_ptr<Transform> sptr;
 	static inline sptr Create() {
 		return std::make_shared<Transform>();
