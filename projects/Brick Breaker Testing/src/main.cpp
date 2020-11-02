@@ -119,6 +119,11 @@ float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 	
 	return ballYSpeed;
 }
+float checkCollisionBrick(Transform::sptr ball, Transform::sptr brick, float ballSpeed) 
+{
+	float max, min;
+	max = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
+}
 
 float checkCollisionBallXSpeed(Transform::sptr ball, Transform::sptr paddle, float ballXSpeed)
 {
@@ -223,18 +228,38 @@ int main() {
 
 	// NEW STUFF
 	//
-	
-	Transform::sptr transformB[3];
-	transformB[0] = Transform::Create();
-	transformB[1] = Transform::Create();
-	transformB[2] = Transform::Create();
-	for (int b = 0; b < 3; b++)
+	static const int numB = 15;
+	Transform::sptr transformB[numB];
+
+
+	for (int b = 0; b < numB; b++)
 	{
+		transformB[b] = Transform::Create();
 
-		transformB[b]->SetLocalPosition(1.0f, -5.5f, 0.0f);
-		transformB[b]->SetLocalScale(0.2f, 0.2f, 0.2f);
-
+		if (b >= 0 && b < 5) 
+		{
+			transformB[b]->SetLocalPosition(-2.0f, -10.5f + b, 0.0f);
+			transformB[b]->SetLocalScale(0.5f, 0.2f, 0.2f);
+		}
+		else if (b >= 5 && b < 10) 
+		{
+			transformB[b]->SetLocalPosition(0.0f, -10.5f + b - 5, 0.0f);
+			transformB[b]->SetLocalScale(0.5f, 0.2f, 0.2f);
+		}
+		else if (b >= 10 && b < numB)
+		{
+			transformB[b]->SetLocalPosition(2.0f, -10.5f + b - 10, 0.0f);
+			transformB[b]->SetLocalScale(0.5f, 0.2f, 0.2f);
+		}
+	
+			
 	}
+
+
+
+
+
+
 
 	// Create some transforms and initialize them
 	Transform::sptr transform[6];
@@ -277,15 +302,22 @@ int main() {
 	vao[4] = vao2;
 	vao[5] = vao2;
 
+
 	
 	//For bricks
 	VertexArrayObject::sptr vaoB0 = ObjLoader::LoadFromFile("Player.obj");
 
 
-	VertexArrayObject::sptr vaoB[3];
-	vaoB[0] = vaoB0;
-	vaoB[1] = vaoB0;
-	vaoB[2] = vaoB0;
+	VertexArrayObject::sptr vaoB[numB];
+
+	for (int num = 0; num < numB; num++) 
+	{
+		vaoB[num] = vaoB0;
+
+	
+	}
+
+	
 
 	// TODO: load textures
 	// Load our texture data from a file
@@ -392,15 +424,17 @@ int main() {
 		}
 
 		//Render all VAO for bricks in our scene
-		for (int ixB = 0; ixB < 3; ixB++) 
+		for (int ixB = 0; ixB < numB; ixB++) 
 		{
 			// TODO: Apply materials
-			materials[ixB].Albedo->Bind(0);
-			materials[ixB].Specular->Bind(1);
-			shader->SetUniform("u_Shininess", materials[ixB].Shininess);
+			materials[0].Albedo->Bind(0);
+			materials[0].Specular->Bind(1);
+			shader->SetUniform("u_Shininess", materials[0].Shininess);
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
 		
 		}
+
+
 
 		glfwSwapBuffers(window);
 		lastFrame = thisFrame;
