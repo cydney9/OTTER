@@ -18,3 +18,5 @@ shared_assets/**
 !**/external/**/*.lib
 
 
+
+projects/Brick Breaker Testing/score.h

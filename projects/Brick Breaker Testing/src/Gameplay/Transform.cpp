@@ -37,6 +37,12 @@ Transform* Transform::SetLocalScale(float x, float y, float z) {
 	_isLocalDirty = true;
 	return this;
 }
+Transform* Transform::SetLives(int x) 
+{
+	_lives = x;
+	_isLocalDirty = true;
+	return this;
+}
 
 Transform* Transform::RotateLocal(float yawDeg, float pitchDeg, float rollDeg) {
 	RotateLocal(glm::vec3(yawDeg, pitchDeg, rollDeg));

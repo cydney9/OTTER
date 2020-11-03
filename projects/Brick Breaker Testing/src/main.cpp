@@ -29,8 +29,9 @@
 #include "Utilities/ObjLoader.h"
 #include "Utilities/VertexTypes.h"
 
-#define LOG_GL_NOTIFICATIONS
 
+
+#define LOG_GL_NOTIFICATIONS
 
 /*
 	Handles debug messages from OpenGL
@@ -67,6 +68,15 @@ void GlDebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsi
 GLFWwindow* window;
 Camera::sptr camera = nullptr;
 
+int score = 0;
+
+void Output(int score, int lives)
+{
+	system("CLS");
+	std::cout << "Lives Remaining: " << lives;
+	std::cout << "\nScore: " << score;
+
+}
 void GlfwWindowResizedCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	camera->ResizeWindow(width, height);
@@ -100,6 +110,19 @@ bool initGLAD() {
 	return true;
 }
 
+int life_Death(int lives)
+{
+	system("CLS");
+	lives--;
+	if (lives == -1)
+		exit(EXIT_SUCCESS);
+
+	Output(score, lives);
+	return lives;
+}
+
+
+
 float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, float ballYSpeed)
 {
 	float max, min;
@@ -119,45 +142,44 @@ float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 
 	return ballYSpeed;
 }
+static const int numB = 15;
 
-float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ballYSpeed)
+float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ballYSpeed, int lives)
 {
 	float maxX, minX, maxY, minY;
 	maxX = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
 	minX = brick->GetLocalPosition().x - (brick->GetLocalScale().x);
 	maxY = brick->GetLocalPosition().y + (brick->GetLocalScale().y);
 	minY = brick->GetLocalPosition().y - (brick->GetLocalScale().y);
-
+	
 	if (brick->GetLocalPosition().z == 0.0f)
 	{
 		if ((ball->GetLocalPosition().y > minY && ball->GetLocalPosition().y < maxY)
 			&& ball->GetLocalPosition().x > minX && ball->GetLocalPosition().x < maxX)
 		{
 			ballYSpeed = -ballYSpeed;
-			brick->SetLocalPosition(0.0f, 0.0f, -3.0f);
-			std::cout << " Destroyed\n";
+			score += 100;
+			
+			Output(score, lives);
+
+			brick->SetLives(brick->GetLives() - 1);
+
+			if (brick->GetLives() <= 0) 
+			{
+			
+				brick->SetLocalPosition(0.0f, 0.0f, -3.0f);
+			}
+			
+			if (score >= 1500)
+			{
+				std::cout << "\nCongratulations You Completed The Game!";
+				ballYSpeed = 0;
+			}
 		}
 	}
 
 	return ballYSpeed;
 
-}
-float checkCollisionBrickX(Transform::sptr ball, Transform::sptr brick, float ballXSpeed)
-{
-	float max, min, middle;
-	max = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
-	min = brick->GetLocalPosition().x - (brick->GetLocalScale().x);
-	middle = max + min / 2;
-
-	if (ball->GetLocalPosition().y >= (brick->GetLocalPosition().y - (brick->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
-	{
-		if (ball->GetLocalPosition().x > middle)
-			ballXSpeed = 0.005;
-		if (ball->GetLocalPosition().x < middle)
-			ballXSpeed = -0.005;
-	}
-
-	return ballXSpeed;
 }
 
 float checkCollisionBallXSpeed(Transform::sptr ball, Transform::sptr paddle, float ballXSpeed)
@@ -228,6 +250,8 @@ int main() {
 	// Enable texturing
 	glEnable(GL_TEXTURE_2D);
 
+	int lives = 3;
+
 	// Load our shaders
 	Shader::sptr shader = Shader::Create();
 	shader->LoadShaderPartFromFile("shaders/vertex_shader.glsl", GL_VERTEX_SHADER);
@@ -261,15 +285,15 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	// NEW STUFF
-	//
+
+	//Bricks
 	static const int numB = 15;
 	Transform::sptr transformB[numB];
-
 
 	for (int b = 0; b < numB; b++)
 	{
 		transformB[b] = Transform::Create();
+		transformB[b]->SetLives(2);
 		float yDis = 1.5f;//Changes the distance between the bricks in y direction
 		if (b >= 0 && b < 5)
 		{
@@ -432,11 +456,11 @@ int main() {
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x <= 2)
-				transform[0]->MoveLocal(0.005, 0, 0);
+				transform[0]->MoveLocal(0.005, 0, 0); //Remove multiple
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x >= -2)
-				transform[0]->MoveLocal(-0.005, 0, 0);
+				transform[0]->MoveLocal(-0.005, 0, 0); //Remove Multiple
 
 		}
 
@@ -457,15 +481,19 @@ int main() {
 
 		ballYSpeed = checkCollisionBallYSpeed(transform[1], transform[0], ballYSpeed);
 		ballXSpeed = checkCollisionBallXSpeed(transform[1], transform[0], ballXSpeed);
-
 		for (int i = 0; i < numB; i++)
 		{
-			ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed);
-
+			ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed, lives);
 
 		}
+
 		//Ball
-		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);
+		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);//Remove Multiple
+
+		if (transform[1]->GetLocalPosition().y >= (transform[0]->GetLocalPosition().y + (transform[0]->GetLocalScale().y * 2)))
+		{
+			lives = life_Death(lives);
+		}
 
 		// Render all VAOs in our scene
 		for (int ix = 0; ix <= 6; ix++) {
@@ -480,9 +508,14 @@ int main() {
 		for (int ixB = 0; ixB < numB; ixB++)
 		{
 			// TODO: Apply materials
-			materialsBrick[0].Albedo->Bind(0);
-			materialsBrick[0].Specular->Bind(1);
-			shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
+			
+				materialsBrick[0].Albedo->Bind(0);
+				materialsBrick[0].Specular->Bind(1);
+				shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
+			
+
+
+			
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
 
 		}
