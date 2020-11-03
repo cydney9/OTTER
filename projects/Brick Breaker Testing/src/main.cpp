@@ -69,7 +69,7 @@ GLFWwindow* window;
 Camera::sptr camera = nullptr;
 
 int score = 0;
-
+int timer = 0;
 void Output(int score, int lives)
 {
 	system("CLS");
@@ -454,7 +454,7 @@ int main() {
 	///// Game loop /////
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
-
+		timer++;
 		// Calculate the time since our last frame (dt)
 		double thisFrame = glfwGetTime();
 		float dt = static_cast<float>(thisFrame - lastFrame);
@@ -483,13 +483,18 @@ int main() {
 		shader->SetUniform("s_Diffuse", 0);
 		shader->SetUniform("s_Specular", 1);
 
-
 		ballYSpeed = checkCollisionBallYSpeed(transform[1], transform[0], ballYSpeed);
 		ballXSpeed = checkCollisionBallXSpeed(transform[1], transform[0], ballXSpeed);
-		for (int i = 0; i < numB; i++)
+		if(timer > 5 )
 		{
-			ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed, lives);
+			timer = 0;
+			std::cout << "Timer" << timer << "\n";
 
+			for (int i = 0; i < numB; i++)
+			{
+				ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed, lives);
+
+			}
 		}
 
 		//Ball
