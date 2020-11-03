@@ -138,9 +138,16 @@ float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ba
 			
 			//brick->SetLocalPosition(0.0f, 0.0f, 0.0f);
 
-			std::cout << " Destroyed\n";
+
 			brick->SetLives(brick->GetLives() - 1);
+
 			std::cout << "Lives: "<< brick->GetLives() << "\n";
+			if (brick->GetLives() <= 0) 
+			{
+			
+				std::cout << " Destroyed\n";
+				brick->SetLocalPosition(0.0f, 0.0f, -3.0f);
+			}
 			
 		}
 	}
@@ -487,9 +494,14 @@ int main() {
 		for (int ixB = 0; ixB < numB; ixB++)
 		{
 			// TODO: Apply materials
-			materialsBrick[0].Albedo->Bind(0);
-			materialsBrick[0].Specular->Bind(1);
-			shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
+			
+				materialsBrick[0].Albedo->Bind(0);
+				materialsBrick[0].Specular->Bind(1);
+				shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
+			
+
+
+			
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
 
 		}
