@@ -154,20 +154,18 @@ float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ba
 	
 	if (brick->GetLocalPosition().z == 0.0f)
 	{
-		if ((ball->GetLocalPosition().y > minY && ball->GetLocalPosition().y < maxY)
-			&& ball->GetLocalPosition().x > minX && ball->GetLocalPosition().x < maxX)
+		if ((ball->GetLocalPosition().y >= minY && ball->GetLocalPosition().y <= maxY)
+			&& ball->GetLocalPosition().x >= minX && ball->GetLocalPosition().x <= maxX)
 		{
 			ballYSpeed = -ballYSpeed;
-			score += 100;
-			
-			Output(score, lives);
 
 			brick->SetLives(brick->GetLives() - 1);
 
 			if (brick->GetLives() <= 0) 
 			{
-			
+				score += 100;
 				brick->SetLocalPosition(0.0f, 0.0f, -3.0f);
+				Output(score, lives);
 			}
 			
 			if (score >= 1500)
@@ -426,15 +424,22 @@ int main() {
 
 	//Brick Materials
 	Texture2DData::sptr brickMap = Texture2DData::LoadFromFile("images/brick.png");
+	Texture2DData::sptr brick2Map = Texture2DData::LoadFromFile("images/brick2.png");
 
 	Texture2D::sptr brick = Texture2D::Create();
 	brick->LoadData(brickMap);
 
+	Texture2D::sptr brick2 = Texture2D::Create();
+	brick2->LoadData(brick2Map);
 
-	Material materialsBrick[1];
+
+	Material materialsBrick[2];
 	materialsBrick[0].Albedo = brick;
 	materialsBrick[0].Specular = specular;
 	materialsBrick[0].Shininess = 16.0f;
+	materialsBrick[1].Albedo = brick2;
+	materialsBrick[1].Specular = specular;
+	materialsBrick[1].Shininess = 16.0f;
 
 	camera = Camera::Create();
 	camera->SetPosition(glm::vec3(0, 2, 3)); // Set initial position
@@ -509,13 +514,19 @@ int main() {
 		{
 			// TODO: Apply materials
 			
+			if (transformB[ixB]->GetLives() != 2.f)
+			{
+				materialsBrick[1].Albedo->Bind(0);
+				materialsBrick[1].Specular->Bind(1);
+				shader->SetUniform("u_Shininess", materialsBrick[1].Shininess);
+			}
+			else
+			{
 				materialsBrick[0].Albedo->Bind(0);
 				materialsBrick[0].Specular->Bind(1);
 				shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
-			
-
-
-			
+			}
+				
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
 
 		}
