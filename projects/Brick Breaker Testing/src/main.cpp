@@ -57,9 +57,9 @@ void GlDebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsi
 	case GL_DEBUG_SEVERITY_LOW:          LOG_INFO("[{}] {}", sourceTxt, message); break;
 	case GL_DEBUG_SEVERITY_MEDIUM:       LOG_WARN("[{}] {}", sourceTxt, message); break;
 	case GL_DEBUG_SEVERITY_HIGH:         LOG_ERROR("[{}] {}", sourceTxt, message); break;
-		#ifdef LOG_GL_NOTIFICATIONS
+#ifdef LOG_GL_NOTIFICATIONS
 	case GL_DEBUG_SEVERITY_NOTIFICATION: LOG_INFO("[{}] {}", sourceTxt, message); break;
-		#endif
+#endif
 	default: break;
 	}
 }
@@ -81,7 +81,7 @@ bool initGLFW() {
 #ifdef _DEBUG
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
-	
+
 	//Create a new GLFW window
 	window = glfwCreateWindow(1200, 900, "Brick Breaker", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
@@ -105,39 +105,42 @@ float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 	float max, min;
 	max = paddle->GetLocalPosition().x + (paddle->GetLocalScale().x);
 	min = paddle->GetLocalPosition().x - (paddle->GetLocalScale().x);
-	
+
 	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y - (paddle->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
 	{
-		
+
 		ballYSpeed = -ballYSpeed;
 	}
 	else if (ball->GetLocalPosition().y < -12.0)
 	{
 		ballYSpeed = -ballYSpeed;
-		
+
 	}
-	
+
 	return ballYSpeed;
 }
 
-float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ballYSpeed) 
+float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ballYSpeed)
 {
-	float max, min;
-	max = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
-	min = brick->GetLocalPosition().x - (brick->GetLocalScale().x);
+	float maxX, minX, maxY, minY;
+	maxX = brick->GetLocalPosition().x + (brick->GetLocalScale().x);
+	minX = brick->GetLocalPosition().x - (brick->GetLocalScale().x);
+	maxY = brick->GetLocalPosition().y + (brick->GetLocalScale().y);
+	minY = brick->GetLocalPosition().y - (brick->GetLocalScale().y);
 
 	if (brick->GetLocalPosition().z == 0.0f)
 	{
-		if ((ball->GetLocalPosition().y <= brick->GetLocalPosition().y + brick->GetLocalScale().y ))
+		if ((ball->GetLocalPosition().y > minY && ball->GetLocalPosition().y < maxY)
+			&& ball->GetLocalPosition().x > minX && ball->GetLocalPosition().x < maxX)
 		{
-			ballYSpeed = -ballYSpeed ;
+			ballYSpeed = -ballYSpeed;
 			brick->SetLocalPosition(0.0f, 0.0f, -3.0f);
-			std::cout <<  brick << " Destroyed\n";
+			std::cout << " Destroyed\n";
 		}
 	}
 
 	return ballYSpeed;
-	
+
 }
 float checkCollisionBrickX(Transform::sptr ball, Transform::sptr brick, float ballXSpeed)
 {
@@ -149,9 +152,9 @@ float checkCollisionBrickX(Transform::sptr ball, Transform::sptr brick, float ba
 	if (ball->GetLocalPosition().y >= (brick->GetLocalPosition().y - (brick->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
 	{
 		if (ball->GetLocalPosition().x > middle)
-			ballXSpeed = 0.0025;
+			ballXSpeed = 0.005;
 		if (ball->GetLocalPosition().x < middle)
-			ballXSpeed = -0.0025;
+			ballXSpeed = -0.005;
 	}
 
 	return ballXSpeed;
@@ -167,14 +170,14 @@ float checkCollisionBallXSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 	if (ball->GetLocalPosition().y >= (paddle->GetLocalPosition().y - (paddle->GetLocalScale().y)) && ball->GetLocalPosition().x > min && ball->GetLocalPosition().x < max)
 	{
 		if (ball->GetLocalPosition().x > middle)
-		ballXSpeed = 0.0025;
+			ballXSpeed = 0.005;
 		if (ball->GetLocalPosition().x < middle)
-			ballXSpeed = -0.0025;
+			ballXSpeed = -0.005;
 	}
 
 	if ((ball->GetLocalPosition().x < -3))
 	{
-		ballXSpeed = ballXSpeed*-1;
+		ballXSpeed = ballXSpeed * -1;
 	}
 	if ((ball->GetLocalPosition().x > 3))
 	{
@@ -224,12 +227,12 @@ int main() {
 
 	// Enable texturing
 	glEnable(GL_TEXTURE_2D);
-		
+
 	// Load our shaders
 	Shader::sptr shader = Shader::Create();
 	shader->LoadShaderPartFromFile("shaders/vertex_shader.glsl", GL_VERTEX_SHADER);
-	shader->LoadShaderPartFromFile("shaders/frag_blinn_phong_textured.glsl", GL_FRAGMENT_SHADER);  
-	shader->Link();  
+	shader->LoadShaderPartFromFile("shaders/frag_blinn_phong_textured.glsl", GL_FRAGMENT_SHADER);
+	shader->Link();
 
 	glm::vec3 lightPos = glm::vec3(0.0f, -10.0f, 10.0f);
 	glm::vec3 lightCol = glm::vec3(0.3f, 0.2f, 0.5f);
@@ -240,7 +243,7 @@ int main() {
 	float     shininess = 4.0f;
 	float     lightLinearFalloff = 0.09f;
 	float     lightQuadraticFalloff = 0.032f;
-	
+
 	// These are our application / scene level uniforms that don't necessarily update
 	// every frame
 	shader->SetUniform("u_LightPos", lightPos);
@@ -267,24 +270,24 @@ int main() {
 	for (int b = 0; b < numB; b++)
 	{
 		transformB[b] = Transform::Create();
-
-		if (b >= 0 && b < 5) 
+		float yDis = 1.5f;//Changes the distance between the bricks in y direction
+		if (b >= 0 && b < 5)
 		{
-			transformB[b]->SetLocalPosition(-2.0f, -10.5f + b, 0.0f);
+			transformB[b]->SetLocalPosition(-2.0f, -10.5f + (b * yDis), 0.0f);
 			transformB[b]->SetLocalScale(0.5f, 0.2f, 0.2f);
 		}
-		else if (b >= 5 && b < 10) 
+		else if (b >= 5 && b < 10)
 		{
-			transformB[b]->SetLocalPosition(0.0f, -10.5f + b - 5, 0.0f);
+			transformB[b]->SetLocalPosition(0.0f, -10.5f + (b * yDis) - (5.0f * 1.5f), 0.0f);
 			transformB[b]->SetLocalScale(0.5f, 0.2f, 0.2f);
 		}
 		else if (b >= 10 && b < numB)
 		{
-			transformB[b]->SetLocalPosition(2.0f, -10.5f + b - 10, 0.0f);
+			transformB[b]->SetLocalPosition(2.0f, -10.5f + (b * yDis) - (10.0f * 1.5f), 0.0f);
 			transformB[b]->SetLocalScale(0.5f, 0.2f, 0.2f);
 		}
-	
-			
+
+
 	}
 
 	// Create some transforms and initialize them
@@ -301,7 +304,7 @@ int main() {
 	transform[0]->SetLocalScale(0.8f, 0.2f, 0.5f);
 
 	transform[1]->SetLocalScale(0.125f, 0.125f, 0.125f);
-	float ballYSpeed = 0.0025f;
+	float ballYSpeed = 0.005f;
 	float ballXSpeed = 0.0f;
 
 	transform[2]->SetLocalScale(5.f, 25.f, 0.01f);
@@ -333,22 +336,13 @@ int main() {
 	vao[5] = vao2;
 	vao[6] = vao2;
 
-
-	
 	//For bricks
-	VertexArrayObject::sptr vaoB0 = ObjLoader::LoadFromFile("Player.obj");
-
-
 	VertexArrayObject::sptr vaoB[numB];
 
-	for (int num = 0; num < numB; num++) 
+	for (int num = 0; num < numB; num++)
 	{
-		vaoB[num] = vaoB0;
-
-	
+		vaoB[num] = vao0;
 	}
-
-	
 
 	// TODO: load textures
 	// Load our texture data from a file
@@ -368,10 +362,8 @@ int main() {
 	yellow->LoadData(yellowMap);
 	Texture2D::sptr black = Texture2D::Create();
 	black->LoadData(blackMap);
-
 	Texture2D::sptr diffuse = Texture2D::Create();
 	diffuse->LoadData(diffuseMap);
-
 	Texture2D::sptr specular = Texture2D::Create();
 	specular->LoadData(specularMap);
 
@@ -416,9 +408,9 @@ int main() {
 
 
 	Material materialsBrick[1];
-		materialsBrick[0].Albedo = brick;
-		materialsBrick[0].Specular = specular;
-		materialsBrick[0].Shininess = 16.0f;
+	materialsBrick[0].Albedo = brick;
+	materialsBrick[0].Specular = specular;
+	materialsBrick[0].Shininess = 16.0f;
 
 	camera = Camera::Create();
 	camera->SetPosition(glm::vec3(0, 2, 3)); // Set initial position
@@ -426,10 +418,10 @@ int main() {
 	camera->LookAt(glm::vec3(0.0f)); // Look at center of the screen
 	camera->SetFovDegrees(90.0f); // Set an initial FOV
 	camera->SetOrthoHeight(3.0f);
-	
+
 	// Our high-precision timer
 	double lastFrame = glfwGetTime();
-	
+
 	///// Game loop /////
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -440,15 +432,15 @@ int main() {
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x <= 2)
-				transform[0]->MoveLocal(0.001, 0, 0);
+				transform[0]->MoveLocal(0.005, 0, 0);
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x >= -2)
-				transform[0]->MoveLocal(-0.001, 0, 0);
+				transform[0]->MoveLocal(-0.005, 0, 0);
 
 		}
 
-		
+
 
 		glClearColor(0.08f, 0.17f, 0.31f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -459,8 +451,8 @@ int main() {
 		shader->SetUniform("u_CamPos", camera->GetPosition());
 
 		// Tell OpenGL that slot 0 will hold the diffuse, and slot 1 will hold the specular
-		shader->SetUniform("s_Diffuse",  0);
-		shader->SetUniform("s_Specular", 1); 
+		shader->SetUniform("s_Diffuse", 0);
+		shader->SetUniform("s_Specular", 1);
 
 
 		ballYSpeed = checkCollisionBallYSpeed(transform[1], transform[0], ballYSpeed);
@@ -468,33 +460,31 @@ int main() {
 
 		for (int i = 0; i < numB; i++)
 		{
-			if (transform[1]->GetLocalPosition().x - transformB[i]->GetLocalPosition().x <=1 && transform[1]->GetLocalPosition().y - transformB[i]->GetLocalPosition().y <= 1) 
-			{
-				ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed);
-			}
-		
+			ballYSpeed = checkCollisionBrickY(transform[1], transformB[i], ballYSpeed);
+
+
 		}
 		//Ball
 		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);
 
 		// Render all VAOs in our scene
-		for(int ix = 0; ix <= 6; ix++) {
+		for (int ix = 0; ix <= 6; ix++) {
 			// TODO: Apply materials
 			materials[ix].Albedo->Bind(0);
 			materials[ix].Specular->Bind(1);
 			shader->SetUniform("u_Shininess", materials[ix].Shininess);
-			RenderVAO(shader, vao[ix], camera, transform[ix]);		
+			RenderVAO(shader, vao[ix], camera, transform[ix]);
 		}
 
 		//Render all VAO for bricks in our scene
-		for (int ixB = 0; ixB < numB; ixB++) 
+		for (int ixB = 0; ixB < numB; ixB++)
 		{
 			// TODO: Apply materials
 			materialsBrick[0].Albedo->Bind(0);
 			materialsBrick[0].Specular->Bind(1);
 			shader->SetUniform("u_Shininess", materialsBrick[0].Shininess);
 			RenderVAO(shader, vaoB[ixB], camera, transformB[ixB]);
-		
+
 		}
 
 
