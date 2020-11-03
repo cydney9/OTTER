@@ -168,7 +168,7 @@ float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ba
 				Output(score, lives);
 			}
 			
-			if (score >= 3000)
+			if (score >= 1500)
 			{
 				std::cout << "\nCongratulations You Completed The Game!";
 				ballYSpeed = 0;
@@ -461,11 +461,11 @@ int main() {
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x <= 2)
-				transform[0]->MoveLocal(0.005 * 50.0f, 0, 0); //Remove multiple
+				transform[0]->MoveLocal(0.005, 0, 0); //Remove multiple
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x >= -2)
-				transform[0]->MoveLocal(-0.005*50.0f, 0, 0); //Remove Multiple
+				transform[0]->MoveLocal(-0.005, 0, 0); //Remove Multiple
 
 		}
 
@@ -498,7 +498,7 @@ int main() {
 		}
 
 		//Ball
-		transform[1]->MoveLocal(ballXSpeed*10.0f, ballYSpeed*10.0f, 0.f);//Remove Multiple
+		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);//Remove Multiple
 
 		if (transform[1]->GetLocalPosition().y >= (transform[0]->GetLocalPosition().y + (transform[0]->GetLocalScale().y * 2)))
 		{
