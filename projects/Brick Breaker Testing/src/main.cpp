@@ -119,6 +119,7 @@ float checkCollisionBallYSpeed(Transform::sptr ball, Transform::sptr paddle, flo
 
 	return ballYSpeed;
 }
+static const int numB = 15;
 
 float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ballYSpeed)
 {
@@ -127,15 +128,20 @@ float checkCollisionBrickY(Transform::sptr ball, Transform::sptr brick, float ba
 	minX = brick->GetLocalPosition().x - (brick->GetLocalScale().x);
 	maxY = brick->GetLocalPosition().y + (brick->GetLocalScale().y);
 	minY = brick->GetLocalPosition().y - (brick->GetLocalScale().y);
-
+	
 	if (brick->GetLocalPosition().z == 0.0f)
 	{
 		if ((ball->GetLocalPosition().y > minY && ball->GetLocalPosition().y < maxY)
 			&& ball->GetLocalPosition().x > minX && ball->GetLocalPosition().x < maxX)
 		{
 			ballYSpeed = -ballYSpeed;
-			brick->SetLocalPosition(0.0f, 0.0f, -3.0f);
+			
+			//brick->SetLocalPosition(0.0f, 0.0f, 0.0f);
+
 			std::cout << " Destroyed\n";
+			brick->SetLives(brick->GetLives() - 1);
+			std::cout << "Lives: "<< brick->GetLives() << "\n";
+			
 		}
 	}
 
@@ -263,13 +269,14 @@ int main() {
 
 	// NEW STUFF
 	//
-	static const int numB = 15;
+
 	Transform::sptr transformB[numB];
 
 
 	for (int b = 0; b < numB; b++)
 	{
 		transformB[b] = Transform::Create();
+		transformB[b]->SetLives(2);
 		float yDis = 1.5f;//Changes the distance between the bricks in y direction
 		if (b >= 0 && b < 5)
 		{
@@ -432,11 +439,11 @@ int main() {
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x <= 2)
-				transform[0]->MoveLocal(0.005, 0, 0);
+				transform[0]->MoveLocal(0.005 * 30.0f, 0, 0); //Remove multiple
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			if (transform[0]->GetLocalPosition().x >= -2)
-				transform[0]->MoveLocal(-0.005, 0, 0);
+				transform[0]->MoveLocal(-0.005 *30.0f, 0, 0); //Remove Multiple
 
 		}
 
@@ -465,7 +472,7 @@ int main() {
 
 		}
 		//Ball
-		transform[1]->MoveLocal(ballXSpeed, ballYSpeed, 0.f);
+		transform[1]->MoveLocal(ballXSpeed * 10.0f, ballYSpeed * 10.0f, 0.f);//Remove Multiple
 
 		// Render all VAOs in our scene
 		for (int ix = 0; ix <= 6; ix++) {

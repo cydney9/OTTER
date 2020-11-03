@@ -82,6 +82,9 @@ public:
 	/// Gets the local scale for this transform, along each axis
 	/// </summary>
 	const glm::vec3& GetLocalScale() const { return _scale; }
+	const int& GetLives() const { return _lives; };
+	
+	Transform* SetLives(int x);
 	/// <summary>
 	/// Sets this transforms scale within it's local space
 	/// </summary>
@@ -178,6 +181,6 @@ private:
 	glm::vec3 _rotationEulerDeg;
 	glm::vec3 _position;
 	glm::vec3 _scale;
-
+	int _lives;
 	void _UpdateLocalTransformIfDirty() const;
 };
